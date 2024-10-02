@@ -3,6 +3,8 @@ package brianpelinku.room_master_capstone_project.preventivi;
 import brianpelinku.room_master_capstone_project.enums.PeriodoSoggiorno;
 import brianpelinku.room_master_capstone_project.enums.TipoCamera;
 import brianpelinku.room_master_capstone_project.enums.TipoServizio;
+import brianpelinku.room_master_capstone_project.listiniPrezzi.ListinoPrezzi;
+import brianpelinku.room_master_capstone_project.prenotazioni.Prenotazione;
 import brianpelinku.room_master_capstone_project.utenti.Utente;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -46,5 +48,25 @@ public class Preventivo {
     @JoinColumn(name = "utenteId")
     private Utente utente;
 
+    @OneToOne(mappedBy = "preventivo")
+    private Prenotazione prenotazione;
 
+    @ManyToOne
+    @JoinColumn(name = "listinoPrezziId")
+    private ListinoPrezzi listinoPrezzi;
+
+    // COSTRUTTORI
+
+
+    public Preventivo(LocalDate arrivo, LocalDate partenza, TipoCamera tipoCamera, TipoServizio tipoServizio, PeriodoSoggiorno periodoSoggiorno, int numeroAdulti, int numeroBambini, double totalePrezzoPreventivo, boolean accettato) {
+        this.arrivo = arrivo;
+        this.partenza = partenza;
+        this.tipoCamera = tipoCamera;
+        this.tipoServizio = tipoServizio;
+        this.periodoSoggiorno = periodoSoggiorno;
+        this.numeroAdulti = numeroAdulti;
+        this.numeroBambini = numeroBambini;
+        this.totalePrezzoPreventivo = totalePrezzoPreventivo;
+        this.accettato = accettato;
+    }
 }

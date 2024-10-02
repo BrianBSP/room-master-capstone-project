@@ -29,4 +29,12 @@ public class Prenotazione {
     @JoinColumn(name = "preventivoId")
     private Preventivo preventivo;
 
+    // COSTRUTTORI
+
+    public Prenotazione(LocalDate arrivo, LocalDate partenza, int giorniDiPernottamento, Preventivo preventivo) {
+        this.arrivo = arrivo;
+        this.partenza = partenza;
+        this.giorniDiPernottamento = giorniDiPernottamento;
+        this.preventivo = preventivo;
+    }
 }
