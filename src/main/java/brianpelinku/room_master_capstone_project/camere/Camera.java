@@ -35,4 +35,9 @@ public class Camera {
     private Hotel hotel;
 
 
+    public Camera(int numeroCamera, int capienzaCamera, TipoCamera tipoCamera) {
+        this.numeroCamera = numeroCamera;
+        this.capienzaCamera = capienzaCamera;
+        this.tipoCamera = tipoCamera;
+    }
 }

@@ -57,7 +57,6 @@ public class Preventivo {
 
     // COSTRUTTORI
 
-
     public Preventivo(LocalDate arrivo, LocalDate partenza, TipoCamera tipoCamera, TipoServizio tipoServizio, PeriodoSoggiorno periodoSoggiorno, int numeroAdulti, int numeroBambini, double totalePrezzoPreventivo, boolean accettato) {
         this.arrivo = arrivo;
         this.partenza = partenza;

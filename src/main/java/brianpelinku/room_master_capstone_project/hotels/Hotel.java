@@ -42,4 +42,11 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel")
     private List<ListinoPrezzi> listinoPrezziList;
 
+    public Hotel(String nome, LivelloStruttura livelloStruttura, int numeroPiani, int numeroCamere, String logoAziendale) {
+        this.nome = nome;
+        this.livelloStruttura = livelloStruttura;
+        this.numeroPiani = numeroPiani;
+        this.numeroCamere = numeroCamere;
+        this.logoAziendale = logoAziendale;
+    }
 }
