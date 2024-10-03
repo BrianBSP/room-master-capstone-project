@@ -41,11 +41,11 @@ public class UtentiService {
             throw new BadRequestException("L'email " + body.email() + " è già in uso.");
         });
 
-        Utente newUtente = new Utente(body.email(), bcrypt.encode(body.password()), body.nome(), body.cognome(),
+        Utente nuovo = new Utente(body.nome(), body.cognome(), body.email(), bcrypt.encode(body.password()),
                 "https://ui-avatars.com/api/?name=" + body.nome() + "+" + body.cognome());
 
         // salvo il nuovo record
-        Utente utenteSalvato = this.utentiRepository.save(newUtente);
+        Utente utenteSalvato = this.utentiRepository.save(nuovo);
 
         // invio email conferma registrazione
         mailSander.sendRegistrationEmail(utenteSalvato);
