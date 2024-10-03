@@ -70,4 +70,10 @@ public class Preventivo {
         this.totalePrezzoPreventivo = totalePrezzoPreventivo;
         this.accettato = false;
     }
+
+    // METODI
+
+    public boolean accettaPreventivo() {
+        return this.accettato = true;
+    }
 }
