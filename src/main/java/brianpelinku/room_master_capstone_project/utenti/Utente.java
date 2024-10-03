@@ -2,6 +2,7 @@ package brianpelinku.room_master_capstone_project.utenti;
 
 import brianpelinku.room_master_capstone_project.enums.RuoloUtente;
 import brianpelinku.room_master_capstone_project.preventivi.Preventivo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -37,6 +38,7 @@ public class Utente implements UserDetails {
     private RuoloUtente ruoloUtente;
 
     @OneToMany(mappedBy = "utente")
+    @JsonIgnore
     private List<Preventivo> preventivoList;
 
 

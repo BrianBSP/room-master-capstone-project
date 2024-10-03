@@ -20,11 +20,13 @@ public class UtentiController {
     private UtentiService utentiService;
 
     @GetMapping("/{utenteId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Utente getById(@PathVariable UUID utenteId) {
         return this.utentiService.findById(utenteId);
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Page<Utente> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
@@ -61,6 +63,16 @@ public class UtentiController {
     public UtentiRespDTO updateProfile(@AuthenticationPrincipal Utente utenteCorrenteAutenticato, @RequestBody @Validated UtentiDTO body) {
         return this.utentiService.findByIdAndUpdate(utenteCorrenteAutenticato.getId(), body);
     }
+
+    @PostMapping("/me/avatar")
+    public Utente updateAvatar(@AuthenticationPrincipal Utente utenteCorrenteAutenticato, @RequestParam("avatar") MultipartFile img) {
+        try {
+            return this.utentiService.uploadImagine(img, utenteCorrenteAutenticato.getId());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     // CLOUDINARY
 

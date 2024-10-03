@@ -25,6 +25,7 @@ public class Preventivo {
     @GeneratedValue
     @Setter(AccessLevel.NONE)
     private UUID id;
+    private LocalDate data;
     private LocalDate arrivo;
     private LocalDate partenza;
     @Column(name = "tipo_camera")
@@ -57,7 +58,8 @@ public class Preventivo {
 
     // COSTRUTTORI
 
-    public Preventivo(LocalDate arrivo, LocalDate partenza, TipoCamera tipoCamera, TipoServizio tipoServizio, PeriodoSoggiorno periodoSoggiorno, int numeroAdulti, int numeroBambini, double totalePrezzoPreventivo, boolean accettato) {
+    public Preventivo(LocalDate arrivo, LocalDate partenza, TipoCamera tipoCamera, TipoServizio tipoServizio, PeriodoSoggiorno periodoSoggiorno, int numeroAdulti, int numeroBambini, double totalePrezzoPreventivo) {
+        this.data = LocalDate.now();
         this.arrivo = arrivo;
         this.partenza = partenza;
         this.tipoCamera = tipoCamera;
@@ -66,6 +68,6 @@ public class Preventivo {
         this.numeroAdulti = numeroAdulti;
         this.numeroBambini = numeroBambini;
         this.totalePrezzoPreventivo = totalePrezzoPreventivo;
-        this.accettato = accettato;
+        this.accettato = false;
     }
 }
