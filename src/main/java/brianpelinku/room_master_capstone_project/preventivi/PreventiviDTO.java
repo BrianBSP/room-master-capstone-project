@@ -12,11 +12,11 @@ public record PreventiviDTO(
         int numeroAdulti,
         @NotNull(message = "Inserire il numero di adulti.")
         int numeroBambini,
-        @NotEmpty(message = "Inserire il tipo di Camera:\nSTANDARD, \nFAMILY_ROOM, \nSUITE")
+        @NotEmpty(message = "Inserire il tipo di Camera: STANDARD, FAMILY_ROOM, SUITE")
         String tipoCamera,
-        @NotEmpty(message = "Inserire il tipo di Servizio:\nALL_INCLUSIVE, \nPENSIONE_COMPLETA, \nMEZZA_PENSIONE, \nBAD_BREAKFAST")
+        @NotEmpty(message = "Inserire il tipo di Servizio: ALL_INCLUSIVE, PENSIONE_COMPLETA, MEZZA_PENSIONE, BAD_BREAKFAST")
         String tipoServizio,
-        @NotEmpty(message = "Inserire il tipo di Servizio:\nALTA_STAGIONE, \nMEDIA_STAGIONE, \nBASSA_STAGIONE")
+        @NotEmpty(message = "Inserire il tipo di Servizio: ALTA_STAGIONE, MEDIA_STAGIONE, BASSA_STAGIONE")
         String periodoSoggiorno,
         double totalePrezzoPreventivo
 ) {

@@ -8,7 +8,11 @@ import java.util.stream.Collectors;
 @Component
 public class Validation {
     public void validate(BindingResult validation) {
-        String messages = validation.getAllErrors().stream().map(error -> error.getDefaultMessage()).collect(Collectors.joining(". "));
+        String messages = validation
+                .getAllErrors()
+                .stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(Collectors.joining(". "));
         if (validation.hasErrors()) throw new BadRequestException("Errori nel Payload. " + messages);
     }
 }

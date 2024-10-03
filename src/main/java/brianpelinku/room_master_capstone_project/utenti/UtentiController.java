@@ -1,5 +1,7 @@
 package brianpelinku.room_master_capstone_project.utenti;
 
+import brianpelinku.room_master_capstone_project.exceptions.Validation;
+import brianpelinku.room_master_capstone_project.preventivi.PreventiviService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,12 @@ public class UtentiController {
 
     @Autowired
     private UtentiService utentiService;
+
+    @Autowired
+    private Validation validation;
+
+    @Autowired
+    private PreventiviService preventiviService;
 
     @GetMapping("/{utenteId}")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -73,9 +81,7 @@ public class UtentiController {
         }
     }
 
-
     // CLOUDINARY
-
     // UPLOAD IMMAGINE
     @PostMapping("/{utenteId}/avatar")
     public Utente uploadImage(@RequestParam("avatar") MultipartFile img, @PathVariable UUID utenteId) throws IOException {

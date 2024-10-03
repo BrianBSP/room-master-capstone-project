@@ -58,6 +58,7 @@ public class PreventiviService {
         Utente utente = (Utente) authentication.getPrincipal();
 
         Preventivo preventivo = new Preventivo();
+        preventivo.setData(LocalDate.now());
         if (LocalDate.parse(body.arrivo()).isBefore(LocalDate.now()))
             throw new BadRequestException("Impossibile inserire una data di arrivo precedente ad oggi.");
         preventivo.setArrivo(LocalDate.parse(body.arrivo()));
@@ -79,12 +80,25 @@ public class PreventiviService {
 
     public PreventiviRespDTO findByIdAndUpdate(UUID preventivoId, PreventiviDTO body) {
         Preventivo trovato = this.findById(preventivoId);
-        if (LocalDate.parse(body.arrivo()).isBefore(LocalDate.now()))
+
+        LocalDate arrivo = LocalDate.parse(body.arrivo());
+        if (arrivo.isBefore(LocalDate.now())) {
+            throw new BadRequestException("Impossibile inserire una data di arrivo precedente ad oggi.");
+        }
+        trovato.setArrivo(arrivo);
+
+        LocalDate partenza = LocalDate.parse(body.partenza());
+        if (partenza.isBefore(arrivo)) {
+            throw new BadRequestException("Inserire correttamente la data di partenza.");
+        }
+        trovato.setPartenza(partenza);
+
+        /*if (LocalDate.parse(body.arrivo()).isBefore(LocalDate.now()))
             throw new BadRequestException("Impossibile inserire una data di arrivo precedente ad oggi.");
         trovato.setArrivo(LocalDate.parse(body.arrivo()));
-        if (LocalDate.parse(body.partenza()).isBefore(LocalDate.parse(body.arrivo())) && LocalDate.parse(body.partenza()).isEqual(LocalDate.parse(body.arrivo())))
+        if (LocalDate.parse(body.partenza()).isBefore(LocalDate.now()))
             throw new BadRequestException("Inserire correttamente la data di partenza.");
-        trovato.setPartenza(LocalDate.parse(body.partenza()));
+        trovato.setPartenza(LocalDate.parse(body.partenza()));*/
         trovato.setNumeroAdulti(body.numeroAdulti());
         trovato.setNumeroBambini(body.numeroBambini());
         trovato.setTipoCamera(TipoCamera.valueOf(body.tipoCamera()));
