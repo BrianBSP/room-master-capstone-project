@@ -1,5 +1,8 @@
 package brianpelinku.room_master_capstone_project.listiniPrezzi;
 
+import brianpelinku.room_master_capstone_project.enums.PeriodoSoggiorno;
+import brianpelinku.room_master_capstone_project.enums.TipoCamera;
+import brianpelinku.room_master_capstone_project.enums.TipoServizio;
 import brianpelinku.room_master_capstone_project.exceptions.BadRequestException;
 import brianpelinku.room_master_capstone_project.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,27 @@ public class ListiniPrezziService {
     public void findByIdAndDelete(UUID listinoId) {
         ListinoPrezzi trovato = this.findById(listinoId);
         this.listiniPrezziRepository.delete(trovato);
+    }
+
+    public ListiniRespDTO save(ListiniDTO body) {
+
+//todo        Hotel hotel = this.hotelService.findById(UUID.fromString(body.hotelId()));
+
+        ListinoPrezzi listinoPrezzi = new ListinoPrezzi();
+        listinoPrezzi.setTipoCamera(TipoCamera.valueOf(body.tipoCamera()));
+        listinoPrezzi.setTipoServizio(TipoServizio.valueOf(body.tipoServizio()));
+        listinoPrezzi.setPeriodoSoggiorno(PeriodoSoggiorno.valueOf(body.periodoSoggiorno()));
+        if (body.prezzoAdultoNotte() < 0)
+            throw new BadRequestException("Il prezzo 'Adulto per Notte' non può essere inferiore a 0.");
+
+        if (body.prezzoBambinoNotte() < 0)
+            throw new BadRequestException("Il prezzo 'Bambino per Notte' non può essere inferiore a 0.");
+        listinoPrezzi.setPrezzoAdultoNotte(body.prezzoAdultoNotte());
+        listinoPrezzi.setPrezzoBambinoNotte(body.prezzoBambinoNotte());
+
+        return new ListiniRespDTO(this.listiniPrezziRepository.save(listinoPrezzi).getId());
+
+
     }
 
     public ListiniRespDTO findByIdAndUpdatePrezzi(UUID listinoId, ListiniDTO body) {
