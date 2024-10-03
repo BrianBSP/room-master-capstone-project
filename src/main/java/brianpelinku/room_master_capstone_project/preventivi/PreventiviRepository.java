@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -18,4 +19,6 @@ public interface PreventiviRepository extends JpaRepository<Preventivo, UUID> {
 
     @Query("SELECT p FROM Preventivo p WHERE EXTRACT(YEAR FROM p.data) = :anno")
     List<Preventivo> findByAnno(@Param("anno") int anno);
+
+    Optional<Preventivo> findByIdAndUtente(UUID id, Utente utente);
 }

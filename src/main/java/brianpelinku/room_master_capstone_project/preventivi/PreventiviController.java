@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,7 @@ public class PreventiviController {
         return this.preventiviService.findAll(page, size, sortBy);
     }
 
-    @GetMapping("/utente/{utenteId}")
+    @GetMapping("/utenti/{utenteId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<Preventivo> findByUtente(@PathVariable UUID utenteId) {
         Utente trovato = this.utentiService.findById(utenteId);
@@ -58,20 +59,29 @@ public class PreventiviController {
         return new PreventiviRespDTO(this.preventiviService.save(body).preventiviId());
     }
 
+    @GetMapping("me/{preventivoId}")
+    @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
+    public PreventiviRespDTO findByIdAndUtente(@PathVariable UUID preventivoId, @AuthenticationPrincipal Utente utente) {
+        /*Preventivo preventivo = this.preventiviService.findByIdAndUtente(preventivoId, utente);
+        return new PreventiviRespDTO(preventivo.getId());*/
+
+        return new PreventiviRespDTO(this.preventiviService.findByIdAndUtente(preventivoId, utente).getId());
+    }
+
     @GetMapping("/{preventivoId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
     public PreventiviRespDTO findById(@PathVariable UUID preventivoId) {
         return new PreventiviRespDTO(this.preventiviService.findById(preventivoId).getId());
     }
 
     @PutMapping("/{preventivoId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
     public PreventiviRespDTO findByIdAndUpdate(@PathVariable UUID preventivoId, @RequestBody @Validated PreventiviDTO body) {
         return this.preventiviService.findByIdAndUpdate(preventivoId, body);
     }
 
     @DeleteMapping("/{preventivoId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void findByIdAndDelete(@PathVariable UUID preventivoId) {
         this.preventiviService.findByIdAndDelete(preventivoId);
