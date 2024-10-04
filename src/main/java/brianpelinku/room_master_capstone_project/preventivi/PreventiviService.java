@@ -126,4 +126,11 @@ public class PreventiviService {
         return new PreventiviRespDTO(this.preventiviRepository.save(trovato).getId());
     }
 
+    public Preventivo checkAccettato(UUID preventivoId, Utente utente) {
+        Preventivo trovato = this.findByIdAndUtente(preventivoId, utente);
+        trovato.accettaPreventivo();
+        this.preventiviRepository.save(trovato);
+        return trovato;
+    }
+
 }

@@ -86,4 +86,11 @@ public class PreventiviController {
     public void findByIdAndDelete(@PathVariable UUID preventivoId) {
         this.preventiviService.findByIdAndDelete(preventivoId);
     }
+
+    @PatchMapping("/me/{preventivoId}/accetta")
+    @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
+    public Preventivo findByIdAndUtenteAndAccettato(@PathVariable UUID preventivoId, @AuthenticationPrincipal Utente utente) {
+        return this.preventiviService.checkAccettato(preventivoId, utente);
+    }
+
 }
