@@ -134,8 +134,6 @@ public class PreventiviService {
         } else {
             trovato.setTipoServizio(TipoServizio.valueOf(body.tipoServizio()));
         }
-        /*trovato.setPeriodoSoggiorno(PeriodoSoggiorno.valueOf(body.periodoSoggiorno()));*/
-
         PeriodoSoggiorno periodo = trovato.determinaPeriodo(LocalDate.parse(body.arrivo()));
 
         trovato.setPeriodoSoggiorno(periodo);

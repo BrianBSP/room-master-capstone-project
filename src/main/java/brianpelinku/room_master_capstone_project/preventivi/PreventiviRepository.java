@@ -21,6 +21,4 @@ public interface PreventiviRepository extends JpaRepository<Preventivo, UUID> {
     List<Preventivo> findByAnno(@Param("anno") int anno);
 
     Optional<Preventivo> findByIdAndUtente(UUID id, Utente utente);
-
-    /*Optional<Preventivo> findByIdAndUtenteAndAccetta(UUID )*/
 }
