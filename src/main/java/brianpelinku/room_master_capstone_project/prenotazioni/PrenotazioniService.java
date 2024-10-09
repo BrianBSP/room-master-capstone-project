@@ -9,5 +9,7 @@ public class PrenotazioniService {
     @Autowired
     private PrenotazioniRepository prenotazioniRepository;
 
-    
+    public Prenotazione creaPrenotazione(Prenotazione prenotazione) {
+        return prenotazioniRepository.save(prenotazione);
+    }
 }

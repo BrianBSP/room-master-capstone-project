@@ -6,7 +6,10 @@ import brianpelinku.room_master_capstone_project.enums.TipoServizio;
 import brianpelinku.room_master_capstone_project.exceptions.BadRequestException;
 import brianpelinku.room_master_capstone_project.exceptions.NotFoundException;
 import brianpelinku.room_master_capstone_project.listiniPrezzi.ListiniPrezziRepository;
+import brianpelinku.room_master_capstone_project.listiniPrezzi.ListiniPrezziService;
 import brianpelinku.room_master_capstone_project.listiniPrezzi.ListinoPrezzi;
+import brianpelinku.room_master_capstone_project.prenotazioni.Prenotazione;
+import brianpelinku.room_master_capstone_project.prenotazioni.PrenotazioniService;
 import brianpelinku.room_master_capstone_project.utenti.Utente;
 import brianpelinku.room_master_capstone_project.utenti.UtentiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,12 @@ public class PreventiviService {
 
     @Autowired
     private ListiniPrezziRepository listiniPrezziRepository;
+
+    @Autowired
+    private ListiniPrezziService listiniPrezziService;
+
+    @Autowired
+    private PrenotazioniService prenotazioniService;
 
     public Page<Preventivo> findAll(int page, int size, String sortBy) {
         if (page > 100) page = 100;
@@ -82,8 +91,17 @@ public class PreventiviService {
         } else {
             preventivo.setTipoServizio(TipoServizio.valueOf(body.tipoServizio()));
         }
-        preventivo.setPeriodoSoggiorno(PeriodoSoggiorno.valueOf(body.periodoSoggiorno()));
+
+        PeriodoSoggiorno periodo = preventivo.determinaPeriodo(LocalDate.parse(body.arrivo()));
+
+        preventivo.setPeriodoSoggiorno(periodo);
+
+        /* preventivo.setPeriodoSoggiorno(PeriodoSoggiorno.valueOf(body.periodoSoggiorno()));*/
         preventivo.setUtente(utente);
+        List<ListinoPrezzi> listinoPrezzi = listiniPrezziRepository.findAll();
+        preventivo.calcolaTotalePreventivo(listinoPrezzi);
+        ListinoPrezzi listino = this.listiniPrezziService.findById(listinoPrezzi.getFirst().getId());
+        preventivo.setListinoPrezzi(listino);
         return new PreventiviRespDTO(this.preventiviRepository.save(preventivo).getId());
     }
 
@@ -102,12 +120,12 @@ public class PreventiviService {
         }
         trovato.setPartenza(partenza);
 
-        /*if (LocalDate.parse(body.arrivo()).isBefore(LocalDate.now()))
+        if (LocalDate.parse(body.arrivo()).isBefore(LocalDate.now()))
             throw new BadRequestException("Impossibile inserire una data di arrivo precedente ad oggi.");
         trovato.setArrivo(LocalDate.parse(body.arrivo()));
         if (LocalDate.parse(body.partenza()).isBefore(LocalDate.now()))
             throw new BadRequestException("Inserire correttamente la data di partenza.");
-        trovato.setPartenza(LocalDate.parse(body.partenza()));*/
+        trovato.setPartenza(LocalDate.parse(body.partenza()));
         trovato.setNumeroAdulti(body.numeroAdulti());
         trovato.setNumeroBambini(body.numeroBambini());
         trovato.setTipoCamera(TipoCamera.valueOf(body.tipoCamera()));
@@ -116,7 +134,11 @@ public class PreventiviService {
         } else {
             trovato.setTipoServizio(TipoServizio.valueOf(body.tipoServizio()));
         }
-        trovato.setPeriodoSoggiorno(PeriodoSoggiorno.valueOf(body.periodoSoggiorno()));
+        /*trovato.setPeriodoSoggiorno(PeriodoSoggiorno.valueOf(body.periodoSoggiorno()));*/
+
+        PeriodoSoggiorno periodo = trovato.determinaPeriodo(LocalDate.parse(body.arrivo()));
+
+        trovato.setPeriodoSoggiorno(periodo);
         return new PreventiviRespDTO(this.preventiviRepository.save(trovato).getId());
     }
 
@@ -135,8 +157,19 @@ public class PreventiviService {
         Preventivo trovato = this.findByIdAndUtente(preventivoId, utente);
         if (trovato.getArrivo().isBefore(LocalDate.now()))
             throw new BadRequestException("Non puoi più accettare questo preventivo. Richiedi un nuovo preventivo.");
-        trovato.accettaPreventivo();
+        trovato.setAccettato(true);
+
+        Prenotazione prenotazione = new Prenotazione();
+        prenotazione.setArrivo(trovato.getArrivo());
+        prenotazione.setPartenza(trovato.getPartenza());
+        prenotazione.setTotalePrezzo(trovato.getTotalePrezzoPreventivo());
+        prenotazione.setPreventivo(trovato);
+        prenotazione.setUtente(utente);
+
+
         this.preventiviRepository.save(trovato);
+        this.prenotazioniService.creaPrenotazione(prenotazione);
+
         return trovato;
     }
 

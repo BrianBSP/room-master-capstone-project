@@ -1,6 +1,7 @@
 package brianpelinku.room_master_capstone_project.prenotazioni;
 
 import brianpelinku.room_master_capstone_project.preventivi.Preventivo;
+import brianpelinku.room_master_capstone_project.utenti.Utente;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,8 +23,12 @@ public class Prenotazione {
     private UUID id;
     private LocalDate arrivo;
     private LocalDate partenza;
-    @Column(name = "giorni_di_pernottamento")
-    private int giorniDiPernottamento;
+    @Column(name = "totale_prezzo")
+    private double totalePrezzo;
+
+    @ManyToOne
+    @JoinColumn(name = "utenteId")
+    private Utente utente;
 
     @OneToOne
     @JoinColumn(name = "preventivoId")
@@ -31,10 +36,11 @@ public class Prenotazione {
 
     // COSTRUTTORI
 
-    public Prenotazione(LocalDate arrivo, LocalDate partenza, int giorniDiPernottamento, Preventivo preventivo) {
+    public Prenotazione(LocalDate arrivo, LocalDate partenza, double totalePrezzo, Utente utente, Preventivo preventivo) {
         this.arrivo = arrivo;
         this.partenza = partenza;
-        this.giorniDiPernottamento = giorniDiPernottamento;
+        this.totalePrezzo = totalePrezzo;
+        this.utente = utente;
         this.preventivo = preventivo;
     }
 }

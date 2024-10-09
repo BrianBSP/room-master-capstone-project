@@ -3,10 +3,12 @@ package brianpelinku.room_master_capstone_project.preventivi;
 import brianpelinku.room_master_capstone_project.enums.PeriodoSoggiorno;
 import brianpelinku.room_master_capstone_project.enums.TipoCamera;
 import brianpelinku.room_master_capstone_project.enums.TipoServizio;
+import brianpelinku.room_master_capstone_project.exceptions.BadRequestException;
 import brianpelinku.room_master_capstone_project.exceptions.NotFoundException;
 import brianpelinku.room_master_capstone_project.listiniPrezzi.ListinoPrezzi;
 import brianpelinku.room_master_capstone_project.prenotazioni.Prenotazione;
 import brianpelinku.room_master_capstone_project.utenti.Utente;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,6 +43,7 @@ public class Preventivo {
     @Column(name = "periodo_soggiorno")
     @Enumerated(EnumType.STRING)
     private PeriodoSoggiorno periodoSoggiorno;
+
     @Column(name = "numero_adulti")
     private int numeroAdulti;
     @Column(name = "numero_bambini")
@@ -57,10 +60,12 @@ public class Preventivo {
     private Prenotazione prenotazione;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "listinoPrezziId")
     private ListinoPrezzi listinoPrezzi;
 
     // COSTRUTTORI
+
 
     public Preventivo(LocalDate arrivo, LocalDate partenza, TipoCamera tipoCamera, TipoServizio tipoServizio, PeriodoSoggiorno periodoSoggiorno, int numeroAdulti, int numeroBambini, double totalePrezzoPreventivo) {
         this.data = LocalDate.now();
@@ -76,10 +81,6 @@ public class Preventivo {
     }
 
     // METODI
-
-    public void accettaPreventivo() {
-        this.accettato = true;
-    }
 
     public double calcolaTotalePreventivo(List<ListinoPrezzi> listinoPrezzi) {
 
@@ -103,6 +104,21 @@ public class Preventivo {
             throw new NotFoundException("Prezzo non trovato nel listino");
         }
         return this.totalePrezzoPreventivo;
-
     }
+
+    public PeriodoSoggiorno determinaPeriodo(LocalDate dataArrivo) {
+        int mese = dataArrivo.getMonthValue();
+
+        if (mese == 11 || mese == 12 || mese <= 3) {
+            return PeriodoSoggiorno.BASSA_STAGIONE;
+        } else if (mese <= 5 || mese >= 9) {
+            return PeriodoSoggiorno.MEDIA_STAGIONE;
+        } else if (mese >= 6 && mese <= 8) {
+            return PeriodoSoggiorno.ALTA_STAGIONE;
+        } else {
+            throw new BadRequestException("Inserire un mese valido.");
+        }
+    }
+
+
 }

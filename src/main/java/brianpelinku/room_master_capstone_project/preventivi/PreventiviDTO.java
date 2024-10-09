@@ -15,9 +15,6 @@ public record PreventiviDTO(
         @NotEmpty(message = "Inserire il tipo di Camera: STANDARD, FAMILY_ROOM, SUITE")
         String tipoCamera,
         @NotEmpty(message = "Inserire il tipo di Servizio: ALL_INCLUSIVE, PENSIONE_COMPLETA, MEZZA_PENSIONE, BAD_BREAKFAST")
-        String tipoServizio,
-        @NotEmpty(message = "Inserire il tipo di Servizio: ALTA_STAGIONE, MEDIA_STAGIONE, BASSA_STAGIONE")
-        String periodoSoggiorno,
-        double totalePrezzoPreventivo
+        String tipoServizio
 ) {
 }
