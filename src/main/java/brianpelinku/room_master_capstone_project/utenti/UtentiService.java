@@ -65,7 +65,7 @@ public class UtentiService {
 
         trovato.setAvatar(url);
 
-        return utentiRepository.save(trovato);
+        return this.utentiRepository.save(trovato);
     }
 
     // cerco tutti gli utenti

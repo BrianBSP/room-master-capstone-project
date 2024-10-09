@@ -8,4 +8,6 @@ public class PrenotazioniService {
 
     @Autowired
     private PrenotazioniRepository prenotazioniRepository;
+
+    
 }

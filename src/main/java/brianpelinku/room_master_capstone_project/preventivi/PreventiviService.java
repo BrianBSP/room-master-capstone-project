@@ -5,6 +5,8 @@ import brianpelinku.room_master_capstone_project.enums.TipoCamera;
 import brianpelinku.room_master_capstone_project.enums.TipoServizio;
 import brianpelinku.room_master_capstone_project.exceptions.BadRequestException;
 import brianpelinku.room_master_capstone_project.exceptions.NotFoundException;
+import brianpelinku.room_master_capstone_project.listiniPrezzi.ListiniPrezziRepository;
+import brianpelinku.room_master_capstone_project.listiniPrezzi.ListinoPrezzi;
 import brianpelinku.room_master_capstone_project.utenti.Utente;
 import brianpelinku.room_master_capstone_project.utenti.UtentiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class PreventiviService {
 
     @Autowired
     private UtentiService utentiService;
+
+    @Autowired
+    private ListiniPrezziRepository listiniPrezziRepository;
 
     public Page<Preventivo> findAll(int page, int size, String sortBy) {
         if (page > 100) page = 100;
@@ -128,9 +133,16 @@ public class PreventiviService {
 
     public Preventivo checkAccettato(UUID preventivoId, Utente utente) {
         Preventivo trovato = this.findByIdAndUtente(preventivoId, utente);
+        if (trovato.getArrivo().isBefore(LocalDate.now()))
+            throw new BadRequestException("Non puoi più accettare questo preventivo. Richiedi un nuovo preventivo.");
         trovato.accettaPreventivo();
         this.preventiviRepository.save(trovato);
         return trovato;
+    }
+
+    public double calcoloTotPreventivo(Preventivo preventivo) {
+        List<ListinoPrezzi> listinoPrezzi = listiniPrezziRepository.findAll();
+        return preventivo.calcolaTotalePreventivo(listinoPrezzi);
     }
 
 }

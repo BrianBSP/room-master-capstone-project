@@ -1,11 +1,13 @@
 package brianpelinku.room_master_capstone_project.preventivi;
 
+import brianpelinku.room_master_capstone_project.exceptions.BadRequestException;
 import brianpelinku.room_master_capstone_project.exceptions.Validation;
 import brianpelinku.room_master_capstone_project.utenti.Utente;
 import brianpelinku.room_master_capstone_project.utenti.UtentiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -70,8 +72,8 @@ public class PreventiviController {
 
     @GetMapping("/{preventivoId}")
     @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
-    public PreventiviRespDTO findById(@PathVariable UUID preventivoId) {
-        return new PreventiviRespDTO(this.preventiviService.findById(preventivoId).getId());
+    public Preventivo findById(@PathVariable UUID preventivoId) {
+        return this.preventiviService.findById(preventivoId);
     }
 
     @PutMapping("/{preventivoId}")
@@ -91,6 +93,16 @@ public class PreventiviController {
     @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
     public Preventivo findByIdAndUtenteAndAccettato(@PathVariable UUID preventivoId, @AuthenticationPrincipal Utente utente) {
         return this.preventiviService.checkAccettato(preventivoId, utente);
+    }
+
+    @PostMapping("/calcola")
+    public ResponseEntity<Double> calcolaPreventivo(@RequestBody Preventivo preventivo) {
+        try {
+            double totale = this.preventiviService.calcoloTotPreventivo(preventivo);
+            return ResponseEntity.ok(totale);
+        } catch (BadRequestException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
 }

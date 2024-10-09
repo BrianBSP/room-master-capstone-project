@@ -3,6 +3,7 @@ package brianpelinku.room_master_capstone_project.preventivi;
 import brianpelinku.room_master_capstone_project.enums.PeriodoSoggiorno;
 import brianpelinku.room_master_capstone_project.enums.TipoCamera;
 import brianpelinku.room_master_capstone_project.enums.TipoServizio;
+import brianpelinku.room_master_capstone_project.exceptions.NotFoundException;
 import brianpelinku.room_master_capstone_project.listiniPrezzi.ListinoPrezzi;
 import brianpelinku.room_master_capstone_project.prenotazioni.Prenotazione;
 import brianpelinku.room_master_capstone_project.utenti.Utente;
@@ -13,6 +14,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Entity
@@ -73,7 +77,32 @@ public class Preventivo {
 
     // METODI
 
-    public boolean accettaPreventivo() {
-        return this.accettato = true;
+    public void accettaPreventivo() {
+        this.accettato = true;
+    }
+
+    public double calcolaTotalePreventivo(List<ListinoPrezzi> listinoPrezzi) {
+
+        Optional<ListinoPrezzi> prezzoListino = listinoPrezzi
+                .stream()
+                .filter(lp -> lp.getTipoCamera() == this.tipoCamera &&
+                        lp.getTipoServizio() == this.tipoServizio &&
+                        lp.getPeriodoSoggiorno() == this.periodoSoggiorno).findFirst();
+
+        if (prezzoListino.isPresent()) {
+            ListinoPrezzi prezzo = prezzoListino.get();
+
+            double totAdulti = prezzo.getPrezzoAdultoNotte() * this.numeroAdulti;
+            double totBambini = prezzo.getPrezzoBambinoNotte() * this.numeroBambini;
+            double totGiornaliero = totAdulti + totBambini;
+
+            long numeroNotti = ChronoUnit.DAYS.between(this.arrivo, this.partenza);
+
+            this.totalePrezzoPreventivo = totGiornaliero * numeroNotti;
+        } else {
+            throw new NotFoundException("Prezzo non trovato nel listino");
+        }
+        return this.totalePrezzoPreventivo;
+
     }
 }
