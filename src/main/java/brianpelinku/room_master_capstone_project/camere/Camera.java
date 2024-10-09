@@ -3,6 +3,7 @@ package brianpelinku.room_master_capstone_project.camere;
 import brianpelinku.room_master_capstone_project.enums.TipoCamera;
 import brianpelinku.room_master_capstone_project.hotels.Hotel;
 import brianpelinku.room_master_capstone_project.prenotazioni.Prenotazione;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,6 +28,7 @@ public class Camera {
     private TipoCamera tipoCamera;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "prenotazioneId")
     private Prenotazione prenotazione;
 

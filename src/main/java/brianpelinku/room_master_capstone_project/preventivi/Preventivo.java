@@ -53,10 +53,12 @@ public class Preventivo {
     private boolean accettato;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "utenteId")
     private Utente utente;
 
     @OneToOne(mappedBy = "preventivo")
+    @JsonIgnore
     private Prenotazione prenotazione;
 
     @ManyToOne
