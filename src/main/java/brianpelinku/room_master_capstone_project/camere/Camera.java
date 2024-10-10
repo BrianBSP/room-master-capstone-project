@@ -1,5 +1,6 @@
 package brianpelinku.room_master_capstone_project.camere;
 
+import brianpelinku.room_master_capstone_project.enums.StatoCamera;
 import brianpelinku.room_master_capstone_project.enums.TipoCamera;
 import brianpelinku.room_master_capstone_project.hotels.Hotel;
 import brianpelinku.room_master_capstone_project.prenotazioni.Prenotazione;
@@ -22,10 +23,17 @@ public class Camera {
     @GeneratedValue
     @Setter(AccessLevel.NONE)
     private UUID id;
+    @Column(name = "numero_camera")
     private int numeroCamera;
+    @Column(name = "capienza_camera")
     private int capienzaCamera;
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_camera")
     private TipoCamera tipoCamera;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "stato_camera")
+    private StatoCamera statoCamera;
 
     @ManyToOne
     @JsonIgnore

@@ -68,7 +68,8 @@ public class PreventiviService {
     }
 
     public Preventivo findByIdAndUtente(UUID preventivoId, Utente utente) {
-        return this.preventiviRepository.findByIdAndUtente(preventivoId, utente).orElseThrow(() -> new NotFoundException("Preventivo non trovato per l'utente: " + utente.getEmail()));
+        Utente trovato = this.utentiService.findById(utente.getId());
+        return this.preventiviRepository.findByIdAndUtente(preventivoId, trovato).orElseThrow(() -> new NotFoundException("Preventivo non trovato per l'utente: " + utente.getEmail()));
     }
 
     public PreventiviRespDTO save(PreventiviDTO body) {
