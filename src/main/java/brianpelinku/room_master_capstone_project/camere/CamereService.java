@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,5 +80,33 @@ public class CamereService {
         this.camereRepository.delete(trovato);
     }
 
+    public List<Camera> findByHotel(Hotel hotel) {
+        return this.camereRepository.findByHotel(hotel);
+    }
 
+    public List<Camera> findCamerePerPrenotazione(TipoCamera tipoCamera, int adulti, int bambini) {
+        int totPersone = adulti + bambini;
+        List<Camera> camereDisponibili = this.camereRepository.findCamereDisponibili(tipoCamera);
+        List<Camera> camereAssegnate = new ArrayList<>();
+        int personeAssegnate = 0;
+        for (Camera camera : camereDisponibili) {
+            camereAssegnate.add(camera);
+            personeAssegnate += camera.getCapienzaCamera();
+            if (personeAssegnate >= totPersone) {
+                break;
+            }
+        }
+        if (personeAssegnate < totPersone) {
+            throw new NotFoundException("Non ci sono abbastanza camere disponibili.");
+        }
+        return camereAssegnate;
+    }
+
+    public void assegnaCamere(List<Camera> camere, Prenotazione prenotazione) {
+        camere.forEach(camera -> {
+            camera.setPrenotazione(prenotazione);
+            camera.setStatoCamera(StatoCamera.OCCUPATA);
+            camereRepository.save(camera);
+        });
+    }
 }

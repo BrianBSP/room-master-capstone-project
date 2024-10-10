@@ -1,6 +1,7 @@
 package brianpelinku.room_master_capstone_project.preventivi;
 
 import brianpelinku.room_master_capstone_project.exceptions.Validation;
+import brianpelinku.room_master_capstone_project.prenotazioni.Prenotazione;
 import brianpelinku.room_master_capstone_project.utenti.Utente;
 import brianpelinku.room_master_capstone_project.utenti.UtentiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,18 +90,9 @@ public class PreventiviController {
 
     @PatchMapping("/me/{preventivoId}/accetta")
     @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
-    public Preventivo findByIdAndUtenteAndAccettato(@PathVariable UUID preventivoId, @AuthenticationPrincipal Utente utente) {
-        return this.preventiviService.checkAccettato(preventivoId, utente);
+    public Prenotazione findByIdAndUtenteAndAccettato(@PathVariable UUID preventivoId, @AuthenticationPrincipal Utente utente) {
+        return this.preventiviService.accettaPreventivoEAssegnaCamere(preventivoId, utente);
     }
 
-    /*@PostMapping("/calcola")
-    public ResponseEntity<Double> calcolaPreventivo(@RequestBody Preventivo preventivo) {
-        try {
-            double totale = this.preventiviService.calcoloTotPreventivo(preventivo);
-            return ResponseEntity.ok(totale);
-        } catch (BadRequestException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }*/
-
+    
 }

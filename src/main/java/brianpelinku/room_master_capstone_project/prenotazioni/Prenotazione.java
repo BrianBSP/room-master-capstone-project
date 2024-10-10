@@ -1,5 +1,6 @@
 package brianpelinku.room_master_capstone_project.prenotazioni;
 
+import brianpelinku.room_master_capstone_project.camere.Camera;
 import brianpelinku.room_master_capstone_project.preventivi.Preventivo;
 import brianpelinku.room_master_capstone_project.utenti.Utente;
 import jakarta.persistence.*;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -33,6 +35,9 @@ public class Prenotazione {
     @OneToOne
     @JoinColumn(name = "preventivoId")
     private Preventivo preventivo;
+
+    @OneToMany(mappedBy = "prenotazione")
+    private List<Camera> camere;
 
     // COSTRUTTORI
 

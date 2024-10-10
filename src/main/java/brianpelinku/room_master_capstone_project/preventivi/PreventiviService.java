@@ -1,5 +1,7 @@
 package brianpelinku.room_master_capstone_project.preventivi;
 
+import brianpelinku.room_master_capstone_project.camere.Camera;
+import brianpelinku.room_master_capstone_project.camere.CamereService;
 import brianpelinku.room_master_capstone_project.enums.PeriodoSoggiorno;
 import brianpelinku.room_master_capstone_project.enums.TipoCamera;
 import brianpelinku.room_master_capstone_project.enums.TipoServizio;
@@ -42,6 +44,9 @@ public class PreventiviService {
 
     @Autowired
     private PrenotazioniService prenotazioniService;
+
+    @Autowired
+    private CamereService camereService;
 
     public Page<Preventivo> findAll(int page, int size, String sortBy) {
         if (page > 100) page = 100;
@@ -152,7 +157,7 @@ public class PreventiviService {
         return new PreventiviRespDTO(this.preventiviRepository.save(trovato).getId());
     }
 
-    public Preventivo checkAccettato(UUID preventivoId, Utente utente) {
+    /*public Preventivo checkAccettato(UUID preventivoId, Utente utente) {
         Preventivo trovato = this.findByIdAndUtente(preventivoId, utente);
         if (trovato.getArrivo().isBefore(LocalDate.now()))
             throw new BadRequestException("Non puoi più accettare questo preventivo. Richiedi un nuovo preventivo.");
@@ -170,11 +175,34 @@ public class PreventiviService {
         this.prenotazioniService.creaPrenotazione(prenotazione);
 
         return trovato;
-    }
+    }*/
 
     public double calcoloTotPreventivo(Preventivo preventivo) {
         List<ListinoPrezzi> listinoPrezzi = listiniPrezziRepository.findAll();
         return preventivo.calcolaTotalePreventivo(listinoPrezzi);
+    }
+
+    public Prenotazione accettaPreventivoEAssegnaCamere(UUID preventivoId, Utente utente) {
+        Preventivo trovato = this.findByIdAndUtente(preventivoId, utente);
+        if (trovato.getArrivo().isBefore(LocalDate.now()))
+            throw new BadRequestException("Non puoi più accettare questo preventivo. Richiedi un nuovo preventivo.");
+        trovato.setAccettato(true);
+        Prenotazione prenotazione = new Prenotazione();
+        prenotazione.setArrivo(trovato.getArrivo());
+        prenotazione.setPartenza(trovato.getPartenza());
+        prenotazione.setTotalePrezzo(trovato.getTotalePrezzoPreventivo());
+        prenotazione.setPreventivo(trovato);
+        prenotazione.setUtente(utente);
+        this.preventiviRepository.save(trovato);
+        this.prenotazioniService.creaPrenotazione(prenotazione);
+        List<Camera> camereDisponibili = this.camereService.findCamerePerPrenotazione(
+                trovato.getTipoCamera(),
+                trovato.getNumeroAdulti(),
+                trovato.getNumeroBambini()
+        );
+        this.camereService.assegnaCamere(camereDisponibili, prenotazione);
+
+        return prenotazione;
     }
 
 }
