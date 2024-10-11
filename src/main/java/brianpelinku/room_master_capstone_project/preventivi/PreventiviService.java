@@ -195,12 +195,7 @@ public class PreventiviService {
         prenotazione.setUtente(utente);
         this.preventiviRepository.save(trovato);
         this.prenotazioniService.creaPrenotazione(prenotazione);
-        List<Camera> camereDisponibili = this.camereService.findCamerePerPrenotazione(
-                trovato.getTipoCamera(),
-                trovato.getNumeroAdulti(),
-                trovato.getNumeroBambini()
-        );
-        this.camereService.assegnaCamere(camereDisponibili, prenotazione);
+        List<Camera> camereDisponibili = this.camereService.findEAssegnaCamerePerPrenotazione(prenotazione);
 
         return prenotazione;
     }

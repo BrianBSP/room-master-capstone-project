@@ -7,6 +7,7 @@ import brianpelinku.room_master_capstone_project.hotels.Hotel;
 import brianpelinku.room_master_capstone_project.hotels.HotelsService;
 import brianpelinku.room_master_capstone_project.prenotazioni.Prenotazione;
 import brianpelinku.room_master_capstone_project.prenotazioni.PrenotazioniService;
+import brianpelinku.room_master_capstone_project.preventivi.Preventivo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,6 +58,8 @@ public class CamereService {
     }
 
     public CamereRespDTO save(CamereDTO body, Hotel hotel) {
+
+
         Camera camera = new Camera();
         camera.setNumeroCamera(body.numeroCamera());
         camera.setCapienzaCamera(body.capienzaCamera());
@@ -84,7 +87,35 @@ public class CamereService {
         return this.camereRepository.findByHotel(hotel);
     }
 
-    public List<Camera> findCamerePerPrenotazione(TipoCamera tipoCamera, int adulti, int bambini) {
+    public List<Camera> findEAssegnaCamerePerPrenotazione(Prenotazione prenotazione) {
+        Preventivo preventivo = prenotazione.getPreventivo();
+        int adulti = preventivo.getNumeroAdulti();
+        int bambini = preventivo.getNumeroBambini();
+        int totPersone = adulti + bambini;
+
+        TipoCamera tipoCamera = preventivo.getTipoCamera();
+        List<Camera> camereDisponibili = this.camereRepository.findCamereDisponibili(tipoCamera);
+        List<Camera> camereAssegnate = new ArrayList<>();
+        int personeAssegnate = 0;
+        for (Camera camera : camereDisponibili) {
+            camereAssegnate.add(camera);
+            personeAssegnate += camera.getCapienzaCamera();
+            if (personeAssegnate >= totPersone) {
+                break;
+            }
+        }
+        if (personeAssegnate < totPersone) {
+            throw new NotFoundException("Non ci sono abbastanza camere disponibili.");
+        }
+        camereAssegnate.forEach(camera -> {
+            camera.setPrenotazione(prenotazione);
+            camera.setStatoCamera(StatoCamera.OCCUPATA);
+            camereRepository.save(camera);
+        });
+        return camereAssegnate;
+    }
+
+    /*public List<Camera> findCamerePerPrenotazione(TipoCamera tipoCamera, int adulti, int bambini) {
         int totPersone = adulti + bambini;
         List<Camera> camereDisponibili = this.camereRepository.findCamereDisponibili(tipoCamera);
         List<Camera> camereAssegnate = new ArrayList<>();
@@ -100,13 +131,13 @@ public class CamereService {
             throw new NotFoundException("Non ci sono abbastanza camere disponibili.");
         }
         return camereAssegnate;
-    }
+    }*/
 
-    public void assegnaCamere(List<Camera> camere, Prenotazione prenotazione) {
+    /*public void assegnaCamere(List<Camera> camere, Prenotazione prenotazione) {
         camere.forEach(camera -> {
             camera.setPrenotazione(prenotazione);
             camera.setStatoCamera(StatoCamera.OCCUPATA);
             camereRepository.save(camera);
         });
-    }
+    }*/
 }

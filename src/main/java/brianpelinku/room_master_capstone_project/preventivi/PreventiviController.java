@@ -63,9 +63,6 @@ public class PreventiviController {
     @GetMapping("me/{preventivoId}")
     @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
     public Preventivo findByIdAndUtente(@PathVariable UUID preventivoId, @AuthenticationPrincipal Utente utente) {
-        /*Preventivo preventivo = this.preventiviService.findByIdAndUtente(preventivoId, utente);
-        return new PreventiviRespDTO(preventivo.getId());*/
-
         return this.preventiviService.findByIdAndUtente(preventivoId, utente);
     }
 
@@ -94,5 +91,5 @@ public class PreventiviController {
         return this.preventiviService.accettaPreventivoEAssegnaCamere(preventivoId, utente);
     }
 
-    
+
 }
