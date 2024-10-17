@@ -21,4 +21,7 @@ public interface PreventiviRepository extends JpaRepository<Preventivo, UUID> {
     List<Preventivo> findByAnno(@Param("anno") int anno);
 
     Optional<Preventivo> findByIdAndUtente(UUID id, Utente utente);
+
+    @Query("SELECT p FROM Preventivo p WHERE p.utente = :utente")
+    List<Preventivo> findAllByUtente(@Param("utente") Utente utente);
 }

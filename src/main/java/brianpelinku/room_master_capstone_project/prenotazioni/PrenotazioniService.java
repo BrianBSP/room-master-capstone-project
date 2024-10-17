@@ -1,5 +1,8 @@
 package brianpelinku.room_master_capstone_project.prenotazioni;
 
+import brianpelinku.room_master_capstone_project.camere.Camera;
+import brianpelinku.room_master_capstone_project.camere.CamereRepository;
+import brianpelinku.room_master_capstone_project.enums.StatoCamera;
 import brianpelinku.room_master_capstone_project.exceptions.NotFoundException;
 import brianpelinku.room_master_capstone_project.utenti.Utente;
 import brianpelinku.room_master_capstone_project.utenti.UtentiService;
@@ -10,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,6 +25,9 @@ public class PrenotazioniService {
 
     @Autowired
     private UtentiService utentiService;
+
+    @Autowired
+    private CamereRepository camereRepository;
 
     public Prenotazione creaPrenotazione(Prenotazione prenotazione) {
         return prenotazioniRepository.save(prenotazione);
@@ -43,15 +50,40 @@ public class PrenotazioniService {
     }
 
     public Prenotazione findById(UUID prenotazioneId) {
-        return this.prenotazioniRepository.findById(prenotazioneId).orElseThrow(() -> new NotFoundException("Prenotazione con id " + prenotazioneId + " non trovato."));
+        return this.prenotazioniRepository.findById(prenotazioneId)
+                .orElseThrow(() -> new NotFoundException("Prenotazione con id " + prenotazioneId + " non trovato."));
     }
 
     public Prenotazione findByIdAndUtente(UUID prenotazioneId, Utente utente) {
-        return this.prenotazioniRepository.findByIdAndUtente(prenotazioneId, utente).orElseThrow(() -> new NotFoundException("Prenotazione non trovata per l'utente: " + utente.getEmail()));
+        return this.prenotazioniRepository.findByIdAndUtente(prenotazioneId, utente)
+                .orElseThrow(() -> new NotFoundException("Prenotazione non trovata per l'utente: " + utente.getEmail()));
     }
 
     public void findByIdAndDelete(UUID prenotazioneId) {
         Prenotazione trovato = this.findById(prenotazioneId);
+
+        List<Camera> camereAssegnate = trovato.getCamere();
+        for (Camera camera : camereAssegnate) {
+            camera.setStatoCamera(StatoCamera.DISPONIBILE);
+            camera.setPrenotazione(null);
+            camereRepository.save(camera);
+        }
+            
         this.prenotazioniRepository.delete(trovato);
     }
+
+    public List<Prenotazione> findAllByUtente(Utente utente) {
+        return this.prenotazioniRepository.findAllByUtente(utente);
+    }
+
+    public Prenotazione findByPreventivoId(UUID preventivoId) {
+        return this.prenotazioniRepository.findByPreventivoId(preventivoId)
+                .orElseThrow(() -> new NotFoundException("Nessuna prenotazione per il preventivo con Id: " + preventivoId));
+    }
+
+    public List<Prenotazione> findByPartenzaBefore(LocalDate partenza) {
+        return this.prenotazioniRepository.findByPartenzaBefore(partenza);
+    }
+
+
 }

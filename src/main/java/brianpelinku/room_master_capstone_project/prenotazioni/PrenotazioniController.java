@@ -45,6 +45,12 @@ public class PrenotazioniController {
         return this.prenotazioniService.findByAnno(anno);
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
+    public List<Prenotazione> findAllByUtente(@AuthenticationPrincipal Utente utente) {
+        return this.prenotazioniService.findAllByUtente(utente);
+    }
+
     @GetMapping("me/{prenotazioneId}")
     @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
     public Prenotazione findByIdAndUtente(@PathVariable UUID prenotazioneId, @AuthenticationPrincipal Utente utente) {
@@ -63,7 +69,7 @@ public class PrenotazioniController {
         return this.prenotazioniService.findByIdAndUpdate(prenotazioneId, body);
     }*/
 
-    @DeleteMapping("/{preventivoId}")
+    @DeleteMapping("/{prenotazioneId}")
     @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void findByIdAndDelete(@PathVariable UUID prenotazioneId) {

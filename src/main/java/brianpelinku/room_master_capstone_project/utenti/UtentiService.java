@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -56,6 +57,10 @@ public class UtentiService {
     public Utente findById(UUID utenteId) {
         return this.utentiRepository.findById(utenteId)
                 .orElseThrow(() -> new NotFoundException("L'utente con l'id " + utenteId + " non è stato trovato."));
+    }
+
+    public List<Utente> findByNomeAndCognome(String nome, String cognome) {
+        return this.utentiRepository.findByNomeAndCognome(nome, cognome);
     }
 
     // upload immagine

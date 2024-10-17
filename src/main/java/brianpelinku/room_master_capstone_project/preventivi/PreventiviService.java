@@ -143,6 +143,17 @@ public class PreventiviService {
         PeriodoSoggiorno periodo = trovato.determinaPeriodo(LocalDate.parse(body.arrivo()));
 
         trovato.setPeriodoSoggiorno(periodo);
+        List<ListinoPrezzi> listinoPrezzi = listiniPrezziRepository.findAll();
+        trovato.calcolaTotalePreventivo(listinoPrezzi);
+        ListinoPrezzi listino = this.listiniPrezziService.findById(listinoPrezzi.getFirst().getId());
+        trovato.setListinoPrezzi(listino);
+
+        if (trovato.isAccettato()) {
+            Prenotazione prenotazione = this.prenotazioniService.findByPreventivoId(preventivoId);
+            prenotazione.setArrivo(trovato.getArrivo());
+            prenotazione.setPartenza(trovato.getPartenza());
+            prenotazione.setTotalePrezzo(trovato.getTotalePrezzoPreventivo());
+        }
         return new PreventiviRespDTO(this.preventiviRepository.save(trovato).getId());
     }
 
@@ -198,6 +209,10 @@ public class PreventiviService {
         List<Camera> camereDisponibili = this.camereService.findEAssegnaCamerePerPrenotazione(prenotazione);
 
         return prenotazione;
+    }
+
+    public List<Preventivo> findAllByUtente(Utente utente) {
+        return preventiviRepository.findAllByUtente(utente);
     }
 
 }

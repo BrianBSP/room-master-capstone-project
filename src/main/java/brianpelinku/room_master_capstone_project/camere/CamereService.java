@@ -2,6 +2,7 @@ package brianpelinku.room_master_capstone_project.camere;
 
 import brianpelinku.room_master_capstone_project.enums.StatoCamera;
 import brianpelinku.room_master_capstone_project.enums.TipoCamera;
+import brianpelinku.room_master_capstone_project.exceptions.BadRequestException;
 import brianpelinku.room_master_capstone_project.exceptions.NotFoundException;
 import brianpelinku.room_master_capstone_project.hotels.Hotel;
 import brianpelinku.room_master_capstone_project.hotels.HotelsService;
@@ -13,8 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -57,7 +60,7 @@ public class CamereService {
         return this.camereRepository.findByNumeroCamera(numeroCamera);
     }
 
-    public CamereRespDTO save(CamereDTO body, Hotel hotel) {
+    public Camera save(CamereDTO body, Hotel hotel) {
 
 
         Camera camera = new Camera();
@@ -66,7 +69,7 @@ public class CamereService {
         camera.setTipoCamera(TipoCamera.valueOf(body.tipoCamera()));
         camera.setStatoCamera(StatoCamera.valueOf(body.statoCamera()));
         camera.setHotel(hotel);
-        return new CamereRespDTO(this.camereRepository.save(camera).getId());
+        return this.camereRepository.save(camera);
     }
 
     public CamereRespDTO findByIdAndUpdate(UUID cameraId, CamereDTO body) {
@@ -115,29 +118,31 @@ public class CamereService {
         return camereAssegnate;
     }
 
-    /*public List<Camera> findCamerePerPrenotazione(TipoCamera tipoCamera, int adulti, int bambini) {
-        int totPersone = adulti + bambini;
-        List<Camera> camereDisponibili = this.camereRepository.findCamereDisponibili(tipoCamera);
-        List<Camera> camereAssegnate = new ArrayList<>();
-        int personeAssegnate = 0;
-        for (Camera camera : camereDisponibili) {
-            camereAssegnate.add(camera);
-            personeAssegnate += camera.getCapienzaCamera();
-            if (personeAssegnate >= totPersone) {
-                break;
-            }
-        }
-        if (personeAssegnate < totPersone) {
-            throw new NotFoundException("Non ci sono abbastanza camere disponibili.");
-        }
-        return camereAssegnate;
-    }*/
+    public void aggiornaStatoCamereDopoScadenzaPrenotazione(Prenotazione prenotazione) {
+        LocalDate oggi = LocalDate.now();
 
-    /*public void assegnaCamere(List<Camera> camere, Prenotazione prenotazione) {
-        camere.forEach(camera -> {
-            camera.setPrenotazione(prenotazione);
-            camera.setStatoCamera(StatoCamera.OCCUPATA);
-            camereRepository.save(camera);
-        });
-    }*/
+        if (prenotazione.getPartenza().isBefore(oggi)) {
+            List<Camera> camere = prenotazione.getCamere();
+
+            for (Camera camera : camere) {
+                camera.setStatoCamera(StatoCamera.DISPONIBILE);
+                camera.setPrenotazione(null);
+                camereRepository.save(camera);
+            }
+        } else {
+            throw new BadRequestException("La camera non è ancora disponibile.");
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void aggiornaCamereScadute() {
+        LocalDate oggi = LocalDate.now();
+
+        List<Prenotazione> prenotazioniScadute = prenotazioniService.findByPartenzaBefore(oggi);
+
+        for (Prenotazione prenotazione : prenotazioniScadute) {
+            aggiornaStatoCamereDopoScadenzaPrenotazione(prenotazione);
+        }
+    }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,5 +23,13 @@ public interface PrenotazioniRepository extends JpaRepository<Prenotazione, UUID
     List<Prenotazione> findByAnno(@Param("anno") int anno);
 
     List<Prenotazione> findByUtente(Utente utente);
+
+    @Query("SELECT p FROM Prenotazione p WHERE p.utente = :utente")
+    List<Prenotazione> findAllByUtente(@Param("utente") Utente utente);
+
+    @Query("SELECT p FROM Prenotazione p WHERE p.preventivo.id = :preventivoId")
+    Optional<Prenotazione> findByPreventivoId(UUID preventivoId);
+
+    List<Prenotazione> findByPartenzaBefore(LocalDate partenza);
 
 }

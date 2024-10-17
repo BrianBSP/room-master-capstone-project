@@ -60,6 +60,12 @@ public class PreventiviController {
         return new PreventiviRespDTO(this.preventiviService.save(body).preventiviId());
     }
 
+    @GetMapping("me")
+    @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
+    public List<Preventivo> findAllByUtente(@AuthenticationPrincipal Utente utente) {
+        return this.preventiviService.findAllByUtente(utente);
+    }
+
     @GetMapping("me/{preventivoId}")
     @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")
     public Preventivo findByIdAndUtente(@PathVariable UUID preventivoId, @AuthenticationPrincipal Utente utente) {
