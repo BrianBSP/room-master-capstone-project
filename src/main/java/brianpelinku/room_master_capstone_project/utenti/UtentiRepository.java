@@ -14,6 +14,6 @@ public interface UtentiRepository extends JpaRepository<Utente, UUID> {
 
     Optional<Utente> findByEmail(String email);
 
-    @Query("SELECT u FROM Utente u WHERE LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%')) AND LOWER(u.cognome) LIKE LOWER(CONCAT('%', :cognome, '%'))")
-    List<Utente> findByNomeAndCognome(@Param("nome") String nome, @Param("cognome") String cognome);
+    @Query("SELECT u FROM Utente u WHERE LOWER(u.nome) LIKE LOWER(CONCAT('%', :parola, '%')) OR LOWER(u.cognome) LIKE LOWER(CONCAT('%', :parola, '%'))")
+    List<Utente> findByNomeAndCognome(@Param("parola") String parola);
 }

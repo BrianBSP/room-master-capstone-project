@@ -82,10 +82,10 @@ public class UtentiController {
         }
     }
 
-    @GetMapping("/{nome}-{cognome}")
+    @GetMapping("/nome-cognome/{parola}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<Utente> findByNomeAndCognome(@PathVariable("nome") String nome, @PathVariable("cognome") String cognome) {
-        return this.utentiService.findByNomeAndCognome(nome, cognome);
+    public List<Utente> findByNomeAndCognome(@PathVariable("parola") String parola) {
+        return this.utentiService.findByNomeAndCognome(parola);
     }
 
 

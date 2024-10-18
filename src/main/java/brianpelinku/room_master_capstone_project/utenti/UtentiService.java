@@ -59,8 +59,8 @@ public class UtentiService {
                 .orElseThrow(() -> new NotFoundException("L'utente con l'id " + utenteId + " non è stato trovato."));
     }
 
-    public List<Utente> findByNomeAndCognome(String nome, String cognome) {
-        return this.utentiRepository.findByNomeAndCognome(nome, cognome);
+    public List<Utente> findByNomeAndCognome(String parola) {
+        return this.utentiRepository.findByNomeAndCognome(parola);
     }
 
     // upload immagine
