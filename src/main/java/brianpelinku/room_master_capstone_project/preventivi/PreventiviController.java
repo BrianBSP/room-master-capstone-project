@@ -6,6 +6,9 @@ import brianpelinku.room_master_capstone_project.utenti.Utente;
 import brianpelinku.room_master_capstone_project.utenti.UtentiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,14 +32,28 @@ public class PreventiviController {
     @Autowired
     private Validation validation;
 
+    @Autowired
+    private PagedResourcesAssembler<Preventivo> pagedResourcesAssembler;
+
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public Page<Preventivo> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "id") String sortBy
-    ) {
-        return this.preventiviService.findAll(page, size, sortBy);
+    public PagedModel<EntityModel<PreventivoRicercaRespDTO>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                                    @RequestParam(defaultValue = "5") int size,
+                                                                    @RequestParam(defaultValue = "id") String sortBy) {
+        Page<Preventivo> preventivoPage = this.preventiviService.findAll(page, size, sortBy);
+
+        /*return (PagedModel<Preventivo>) this.preventiviService.findAll(page, size, sortBy);*/
+        return pagedResourcesAssembler.toModel(preventivoPage, preventivo -> {
+
+            PreventivoRicercaRespDTO dto = new PreventivoRicercaRespDTO(preventivo.getId(),
+                    preventivo.getData(), preventivo.getArrivo(), preventivo.getPartenza(),
+                    preventivo.getTipoCamera(), preventivo.getTipoServizio(),
+                    preventivo.getPeriodoSoggiorno(), preventivo.getNumeroAdulti(),
+                    preventivo.getNumeroBambini(), preventivo.getTotalePrezzoPreventivo(),
+                    preventivo.isAccettato(), preventivo.getUtente());
+
+            return EntityModel.of(dto);
+        });
     }
 
     @GetMapping("/utenti/{utenteId}")

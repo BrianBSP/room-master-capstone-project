@@ -53,7 +53,6 @@ public class Preventivo {
     private boolean accettato;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "utenteId")
     private Utente utente;
 
