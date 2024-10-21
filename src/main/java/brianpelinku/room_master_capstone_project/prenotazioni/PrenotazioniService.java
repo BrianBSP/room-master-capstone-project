@@ -45,8 +45,10 @@ public class PrenotazioniService {
         return this.prenotazioniRepository.findByUtente(trovato);
     }
 
-    public List<Prenotazione> findByAnno(int anno) {
-        return this.prenotazioniRepository.findByAnno(anno);
+    public Page<Prenotazione> findByAnno(int page, int size, String sortBy, int anno) {
+        if (page > 100) page = 100;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return this.prenotazioniRepository.findByAnno(anno, pageable);
     }
 
     public Prenotazione findById(UUID prenotazioneId) {
@@ -68,7 +70,7 @@ public class PrenotazioniService {
             camera.setPrenotazione(null);
             camereRepository.save(camera);
         }
-            
+
         this.prenotazioniRepository.delete(trovato);
     }
 
@@ -85,5 +87,7 @@ public class PrenotazioniService {
         return this.prenotazioniRepository.findByPartenzaBefore(partenza);
     }
 
-
+    public List<Prenotazione> findByNomeAndCognomeUtente(String parola) {
+        return this.prenotazioniRepository.findByNomeAndCognomeUtente(parola);
+    }
 }

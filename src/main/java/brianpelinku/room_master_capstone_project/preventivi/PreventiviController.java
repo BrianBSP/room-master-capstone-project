@@ -56,6 +56,45 @@ public class PreventiviController {
         });
     }
 
+    @GetMapping("/accettati")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public PagedModel<EntityModel<PreventivoRicercaRespDTO>> getAllAccettatoTrue(@RequestParam(defaultValue = "0") int page,
+                                                                                 @RequestParam(defaultValue = "5") int size,
+                                                                                 @RequestParam(defaultValue = "id") String sortBy) {
+        Page<Preventivo> preventivoPage = this.preventiviService.findByAccettatoTrue(page, size, sortBy);
+        return pagedResourcesAssembler.toModel(preventivoPage, preventivo -> {
+            PreventivoRicercaRespDTO dto = new PreventivoRicercaRespDTO(preventivo.getId(),
+                    preventivo.getData(), preventivo.getArrivo(), preventivo.getPartenza(),
+                    preventivo.getTipoCamera(), preventivo.getTipoServizio(),
+                    preventivo.getPeriodoSoggiorno(), preventivo.getNumeroAdulti(),
+                    preventivo.getNumeroBambini(), preventivo.getTotalePrezzoPreventivo(),
+                    preventivo.isAccettato(), preventivo.getUtente());
+
+            return EntityModel.of(dto);
+        });
+    }
+
+    @GetMapping("/anno/{anno}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public PagedModel<EntityModel<PreventivoRicercaRespDTO>> findByAnno(@PathVariable int anno,
+                                                                        @RequestParam(defaultValue = "0") int page,
+                                                                        @RequestParam(defaultValue = "5") int size,
+                                                                        @RequestParam(defaultValue = "id") String sortBy) {
+        Page<Preventivo> preventivoPage = this.preventiviService.findByAnno(page, size, sortBy, anno);
+
+        return pagedResourcesAssembler.toModel(preventivoPage, preventivo -> {
+            PreventivoRicercaRespDTO dto = new PreventivoRicercaRespDTO(preventivo.getId(),
+                    preventivo.getData(), preventivo.getArrivo(), preventivo.getPartenza(),
+                    preventivo.getTipoCamera(), preventivo.getTipoServizio(),
+                    preventivo.getPeriodoSoggiorno(), preventivo.getNumeroAdulti(),
+                    preventivo.getNumeroBambini(), preventivo.getTotalePrezzoPreventivo(),
+                    preventivo.isAccettato(), preventivo.getUtente());
+
+            return EntityModel.of(dto);
+        });
+    }
+
+
     @GetMapping("/utenti/{utenteId}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public List<Preventivo> findByUtente(@PathVariable UUID utenteId) {
@@ -63,11 +102,12 @@ public class PreventiviController {
         return this.preventiviService.findByUtente(trovato);
     }
 
-    @GetMapping("/anno/{anno}")
+    @GetMapping("/search/{parola}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public List<Preventivo> findByAnno(@PathVariable int anno) {
-        return this.preventiviService.findByAnno(anno);
+    public List<Preventivo> findByNomeAndCognomeUtente(@PathVariable("parola") String parola) {
+        return this.preventiviService.findByNomeAndCognomeUtente(parola);
     }
+
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('UTENTE','ADMIN')")

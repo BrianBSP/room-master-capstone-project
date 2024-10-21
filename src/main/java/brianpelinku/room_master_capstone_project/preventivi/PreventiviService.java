@@ -60,12 +60,16 @@ public class PreventiviService {
         return this.preventiviRepository.findByUtente(trovato);
     }
 
-    public List<Preventivo> findByAccettato(boolean accettato) {
-        return this.preventiviRepository.findByAccettato(accettato);
+    public Page<Preventivo> findByAccettatoTrue(int page, int size, String sortBy) {
+        if (page > 100) page = 100;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return this.preventiviRepository.findByAccettatoTrue(pageable);
     }
 
-    public List<Preventivo> findByAnno(int anno) {
-        return this.preventiviRepository.findByAnno(anno);
+    public Page<Preventivo> findByAnno(int page, int size, String sortBy, int anno) {
+        if (page > 100) page = 100;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        return this.preventiviRepository.findByAnno(anno, pageable);
     }
 
     public Preventivo findById(UUID preventivoId) {
@@ -213,6 +217,10 @@ public class PreventiviService {
 
     public List<Preventivo> findAllByUtente(Utente utente) {
         return preventiviRepository.findAllByUtente(utente);
+    }
+
+    public List<Preventivo> findByNomeAndCognomeUtente(String parola) {
+        return this.preventiviRepository.findByNomeAndCognomeUtente(parola);
     }
 
 }
