@@ -87,13 +87,13 @@ public class CamereController {
     }
 
 
-    @PostMapping("/{hotelId}")
+    @PostMapping("/{hotelId}/crea")
     @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     public Camera save(@RequestBody @Validated CamereDTO body, @PathVariable UUID hotelId, BindingResult validation) {
         this.validation.validate(validation);
-        Hotel trovato = this.hotelsService.findById(hotelId);
-        return this.camereService.save(body, trovato);
+
+        return this.camereService.save(body, hotelId);
     }
 
     @PutMapping("/{cameraId}")

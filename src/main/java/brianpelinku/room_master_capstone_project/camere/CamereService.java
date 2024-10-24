@@ -60,15 +60,15 @@ public class CamereService {
         return this.camereRepository.findByNumeroCamera(numeroCamera);
     }
 
-    public Camera save(CamereDTO body, Hotel hotel) {
+    public Camera save(CamereDTO body, UUID hotelId) {
 
-
+        Hotel trovato = this.hotelsService.findById(hotelId);
         Camera camera = new Camera();
         camera.setNumeroCamera(body.numeroCamera());
         camera.setCapienzaCamera(body.capienzaCamera());
         camera.setTipoCamera(TipoCamera.valueOf(body.tipoCamera()));
         camera.setStatoCamera(StatoCamera.valueOf(body.statoCamera()));
-        camera.setHotel(hotel);
+        camera.setHotel(trovato);
         return this.camereRepository.save(camera);
     }
 

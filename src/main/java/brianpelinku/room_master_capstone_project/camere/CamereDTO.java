@@ -13,6 +13,6 @@ public record CamereDTO(
         @NotEmpty(message = "Inserisci lo stato della camera: LIBERA, OCCUPATA, IN_PREPARAZIONE, FUORI_SERVIZIO.")
         String statoCamera,
         @NotEmpty(message = "Inserisci l'hotel di appartenenza.")
-        String hotel
+        String hotelId
 ) {
 }
